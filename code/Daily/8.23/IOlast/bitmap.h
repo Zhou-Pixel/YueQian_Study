@@ -1,3 +1,11 @@
+/*
+ * @Author: ZhouGuiqing
+ * @Date: 2021-09-09 16:56:00
+ * @LastEditTime: 2021-09-09 18:23:07
+ * @LastEditors: ZhouGuiqing
+ * @Description: 
+ * @FilePath: /YueQian/code/Daily/8.23/IOlast/bitmap.h
+ */
 #ifndef __bitmap_h__
 #define __bitmap_h__
 
@@ -20,7 +28,6 @@ typedef char s8;
 typedef short s16;
 typedef int s32;
 typedef long long s64;
-
 
 
 typedef struct{
