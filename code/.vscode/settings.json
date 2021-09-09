@@ -1,0 +1,44 @@
+{
+    "files.associations": {
+        "cstdio": "cpp",
+        "cctype": "cpp",
+        "string.h": "c",
+        "stdio.h": "c",
+        "array": "cpp",
+        "atomic": "cpp",
+        "*.tcc": "cpp",
+        "cstddef": "cpp",
+        "cwchar": "cpp",
+        "vector": "cpp",
+        "functional": "cpp",
+        "memory": "cpp",
+        "memory_resource": "cpp",
+        "optional": "cpp",
+        "string_view": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "random": "cpp",
+        "fstream": "cpp",
+        "initializer_list": "cpp",
+        "new": "cpp",
+        "stdexcept": "cpp",
+        "string": "cpp",
+        "system_error": "cpp",
+        "typeinfo": "cpp",
+        "utility": "cpp",
+        "errno.h": "c",
+        "font.h": "c",
+        "list.h": "c",
+        "_stdio.h": "c",
+        "stdlib.h": "c",
+        "custom_kernel_list.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "Enabled",
+    "fileheader.cursorMode": {
+    
+    },
+    "fileheader.customMade": {
+    
+    }
+
+}

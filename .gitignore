@@ -42,6 +42,19 @@
 *.idb
 *.pdb
 
+# Custom
+*.db
+*.gz
+*.ini
+*.doc
+*.docx
+*.chm
+*.pdf
+/.vscode
+/c_pdf
+
+
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd
