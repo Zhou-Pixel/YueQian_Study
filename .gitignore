@@ -44,6 +44,7 @@
 
 # Custom
 *.ffs_db
+*.db
 *.gz
 *.ini
 *.doc
