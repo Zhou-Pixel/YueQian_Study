@@ -1,10 +1,10 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-06 18:41:18
- * @LastEditTime: 2021-09-06 18:52:55
+ * @LastEditTime: 2021-09-09 17:28:37
  * @LastEditors: ZhouGuiqing
  * @Description: 
- * @FilePath: /code/Daily/9.6/test_interface.c
+ * @FilePath: /YueQian/code/Daily/9.6/test_interface.c
  */
 #include <stdio.h>
 #include <string.h>
@@ -39,10 +39,7 @@ int main_interface()
             {
                 printf("登录管理员\n");
             }
-            
         }
-        
-        
     }
     
 }

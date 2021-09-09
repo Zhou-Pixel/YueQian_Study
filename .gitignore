@@ -43,15 +43,18 @@
 *.pdb
 
 # Custom
-*.db
+*.ffs_db
 *.gz
 *.ini
 *.doc
 *.docx
 *.chm
 *.pdf
-/.vscode
+*.DS_Store
+/.ecloud
+/code/.vscode
 /c_pdf
+
 
 
 
