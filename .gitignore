@@ -53,7 +53,8 @@
 *.pdf
 *.DS_Store
 /.ecloud
-/code/.vscode
+/code
+/.vscode
 /c_pdf
 
 
