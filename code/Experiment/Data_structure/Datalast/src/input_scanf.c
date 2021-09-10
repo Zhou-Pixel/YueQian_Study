@@ -1,10 +1,10 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-03 19:26:13
- * @LastEditTime: 2021-09-09 10:33:40
+ * @LastEditTime: 2021-09-10 14:53:09
  * @LastEditors: ZhouGuiqing
  * @Description: 再次封装scanf函数，使其稳定获取键盘输入，
- * @FilePath: /code/Experiment/Data_structure/Datalast/src/input_scanf.c
+ * @FilePath: /YueQian/code/Experiment/Data_structure/Datalast/src/input_scanf.c
  */
 
 #include <stdio.h>
@@ -56,9 +56,7 @@ char input_fgets_char(void)
         {
             break;
         }
-
         printf("格式不对，请重新输入\n");
-        
     }
     return buf[0];  
 }
@@ -66,7 +64,6 @@ char input_fgets_char(void)
 float input_scanf_float(void)
 {
     float input_value;
-
 
     while (!(scanf("%f", &input_value) == 1 && getchar() == '\n'))
     {
