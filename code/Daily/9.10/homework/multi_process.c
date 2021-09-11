@@ -1,7 +1,7 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-10 18:46:20
- * @LastEditTime: 2021-09-10 19:22:11
+ * @LastEditTime: 2021-09-11 10:13:21
  * @LastEditors: ZhouGuiqing
  * @Description: 
  * @FilePath: /YueQian/code/Daily/9.10/homework/multi_process.c
@@ -27,15 +27,7 @@ int main(int argc, char const *argv[])
     if (pid == 0)
     {
         printf("def\n");
-        switch (getchar())
-        {
-        case 'a':
-            exit(1);
-        case 'b':
-            exit(2);
-        default:
-            exit(0);
-        }
+        exit(getchar());
     }
 
 
@@ -52,10 +44,10 @@ int main(int argc, char const *argv[])
 
     switch (WEXITSTATUS(status))
     {
-    case 1:
+    case 'a':
         printf("hello\n");
         break;
-    case 2:
+    case 'b':
         printf("world\n");
         break;
     }
