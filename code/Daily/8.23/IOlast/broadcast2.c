@@ -357,6 +357,7 @@ int main(int argc, char const *argv[])
             state = EXIT;
             bzerolcd();
             printf("退出程序\n");
+            fontUnload(f);
             return 0;            
 
         }
