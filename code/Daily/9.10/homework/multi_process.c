@@ -1,22 +1,20 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-10 18:46:20
- * @LastEditTime: 2021-09-11 10:13:21
+ * @LastEditTime: 2021-09-11 18:34:38
  * @LastEditors: ZhouGuiqing
  * @Description: 
  * @FilePath: /YueQian/code/Daily/9.10/homework/multi_process.c
  */
-
 #include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <stdlib.h>
 
-
 void readytoexit(void)
 {
-    printf("父进程退出了\n");
+    printf("进程退出了\n");
 }
 
 int main(int argc, char const *argv[])
@@ -30,7 +28,6 @@ int main(int argc, char const *argv[])
         exit(getchar());
     }
 
-
     atexit(readytoexit);
 
     int status;
@@ -40,7 +37,6 @@ int main(int argc, char const *argv[])
     {
         exit(0);
     }
-    
 
     switch (WEXITSTATUS(status))
     {
