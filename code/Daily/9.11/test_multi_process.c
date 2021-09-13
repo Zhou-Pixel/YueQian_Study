@@ -1,7 +1,7 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-11 12:23:46
- * @LastEditTime: 2021-09-11 12:32:10
+ * @LastEditTime: 2021-09-12 20:24:04
  * @LastEditors: ZhouGuiqing
  * @Description: 分别测试多进程，父进程正常和非正常退出时，子进程的存活情况
  * @FilePath: /YueQian/code/Daily/9.11/test_multi_process.c
@@ -42,14 +42,11 @@ int main(int argc, char const *argv[])
         
     }
 
-
     // while (1)
     // {
     //     sleep(2);
     //     printf("这是父进程\n");
     // }
-    
-    
     
     return 0;
 }
