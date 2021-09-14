@@ -1,7 +1,7 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-13 18:57:05
- * @LastEditTime: 2021-09-13 19:23:42
+ * @LastEditTime: 2021-09-14 09:48:38
  * @LastEditors: ZhouGuiqing
  * @Description: 
  * @FilePath: /YueQian/code/Experiment/Concurrent_programming/exp2/exp2_2_2.c
@@ -24,7 +24,7 @@ int main(int argc, char const *argv[])
 
     while (1)
     {
-        sleep(1);
+        sleep(3);
         if (fork() == 0)
         {
             char buf[100]={0};
@@ -32,7 +32,7 @@ int main(int argc, char const *argv[])
             sprintf(buf, "%d    %s", getpid(), ctime(&t));
             printf("%s", buf);
             write(fd, buf, strlen(buf));
-            exit(0);  
+            exit(0);
         }
 
         
