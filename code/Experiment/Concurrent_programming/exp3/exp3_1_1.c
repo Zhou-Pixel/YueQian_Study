@@ -1,7 +1,7 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-14 18:45:06
- * @LastEditTime: 2021-09-14 20:25:35
+ * @LastEditTime: 2021-09-15 10:21:02
  * @LastEditors: ZhouGuiqing
  * @Description: 售票员
  * @FilePath: /YueQian/code/Experiment/Concurrent_programming/exp3/exp3_1_1.c
@@ -47,26 +47,23 @@ int main(int argc, char const *argv[])
         return 0;
     }
 
-    pid_t pid;
-    char buf[100] = {0};
-    read(fd, buf, 100);
-    sscanf(buf, "driver:%d", &pid);
+    pid_t driver_pid;
+    read(fd, &driver_pid, sizeof(driver_pid));
 
 
 
-    char buf2[100] = {0};
-    sprintf(buf2, "conductor:%d", getpid());
-    write(fd, buf2, strlen(buf2));
+    pid_t con_pid = getpid();
+    write(fd, &con_pid, sizeof(con_pid));
 
     while (1)
     {
         switch (input_fgets_char())
         {
         case 'a':
-            kill(pid, SIGRTMIN);
+            kill(driver_pid, SIGRTMIN);
             break;
         case 'b':
-            kill(pid, SIGRTMAX);
+            kill(driver_pid, SIGRTMAX);
             break;
         }
     }
