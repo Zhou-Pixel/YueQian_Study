@@ -1,7 +1,7 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-17 19:41:29
- * @LastEditTime: 2021-09-17 20:24:41
+ * @LastEditTime: 2021-09-18 15:02:58
  * @LastEditors: ZhouGuiqing
  * @Description: 
  * @FilePath: /YueQian/code/Daily/9.17/homework/2.c
@@ -17,9 +17,6 @@ int count = 5;
 pthread_cond_t cond;
 pthread_mutex_t lock;
 
-
-
-
 void *count_v(void *arg)
 {
     pthread_mutex_lock(&lock);
@@ -34,7 +31,6 @@ void *count_v(void *arg)
         printf("减1\n");
         count--;        
     }
-
     pthread_mutex_unlock(&lock);
     
 }
@@ -67,7 +63,6 @@ int main(int argc, char const *argv[])
     }
     
     char buf[100];
-
     while (1)
     {
         printf("请输入：");
@@ -77,22 +72,15 @@ int main(int argc, char const *argv[])
         {
             break;
         }
-        
     }
     
-
-    
-
     for (int i = 0; i < 3; i++)
     {
         pthread_cancel(tid[i]);
     }
 
-
     pthread_mutex_destroy(&lock);
     pthread_cond_destroy(&cond);
     
-
-
     return 0;
 }
