@@ -1,7 +1,7 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-17 18:59:50
- * @LastEditTime: 2021-09-17 19:41:27
+ * @LastEditTime: 2021-09-18 09:22:55
  * @LastEditors: ZhouGuiqing
  * @Description: 1，利用线程间的信号量实现一个逻辑
  *	从键盘中获取数据，用另外一条线程将数据打印出来
