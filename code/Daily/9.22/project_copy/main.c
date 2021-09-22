@@ -1,7 +1,7 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-22 18:52:45
- * @LastEditTime: 2021-09-22 18:52:45
+ * @LastEditTime: 2021-09-22 20:32:45
  * @LastEditors: ZhouGuiqing
  * @Description: 利用线程池拷贝文件夹
  * @FilePath: /YueQian/code/Daily/9.22/project_copy/main.c
@@ -17,6 +17,43 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "thread_pool.h"
+
+
+typedef struct cp_structure
+{
+    char *source;
+    char *destination;
+}filepath;
+
+
+
+/**
+ * @description: 初始化目标文件和源文件结构体
+ * @param {*}
+ * @return {*}
+ */
+filepath *init_cp_structure(void)
+{
+    filepath *new = calloc(1, sizeof(filepath));
+    new->source = calloc(1, 4096);
+    new->destination = calloc(1, 4096);
+
+    if (new->destination == NULL || new->source == NULL)
+    {
+        return NULL;
+    }
+    return new;
+}
+
+
+void free_cp_structure(filepath *cp)
+{
+    free(cp->destination);
+    free(cp->source);
+    free(cp);
+}
+
 /**
  * @description:  绝对路径
  * @param {char} *absolutepath
@@ -26,7 +63,7 @@
  */
 char *linkpath(char *abpath, const char *partpath, char *name)
 {
-    bzero(abpath, PATH_MAX); //待优化
+    bzero(abpath, 4096); //待优化
     sprintf(abpath, "%s%s%s", partpath, "/", name);
     // printf("%s\n", absolutepath);
     return abpath;
@@ -37,28 +74,32 @@ char *linkpath(char *abpath, const char *partpath, char *name)
  * @param {*}
  * @return {*}
  */
-void copyregfile(const char *argv1, const char *argv2)
+void *copyregfile(void *arg)
 {
 
-    printf("copyregfile函数启动\n");
-    printf("argv1:%s\n", argv1);
-    printf("argv2:%s\n", argv2);
-    int fd1 = open(argv1, O_RDONLY);
+    // printf("copyregfile函数启动\n");
+    // printf("argv1:%s\n", argv1);
+    // printf("argv2:%s\n", argv2);
+    filepath *copy_files = init_cp_structure();
+    memcpy(copy_files, arg, sizeof(filepath));
+    int fd1 = open(copy_files->source, O_RDONLY);
     if (fd1 == -1)
     {
         perror("argv[1]打开失败");
-        return;
+        return NULL;
     }
+
+    struct stat stat_buf;
+    stat(copy_files->source, &stat_buf);
     
-    int fd2 = open(argv2, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    int fd2 = open(copy_files->destination, O_WRONLY | O_CREAT | O_TRUNC, stat_buf.st_mode);
     char buf[100];
     int nread, nwrite;
 
     while (1)
     {
 
-        while ((nread = read(fd1, buf, 100)) == -1 && errno == EINTR)
-            ;
+        while ((nread = read(fd1, buf, 100)) == -1 && errno == EINTR);
         if (nread == 0)
         {
             break;
@@ -66,15 +107,16 @@ void copyregfile(const char *argv1, const char *argv2)
         while (nread > 0)
         {
             char *temp = buf;
-            while ((nwrite = write(fd2, temp, nread)) == -1 && errno == EINTR)
-                ;
+            while ((nwrite = write(fd2, temp, nread)) == -1 && errno == EINTR);
             nread -= nwrite;
             temp += nwrite;
         }
     }
+    free_cp_structure((filepath *)arg);
+    free_cp_structure(copy_files);
     close(fd1);
     close(fd2);
-    printf("复制完成\n");
+    // printf("复制完成\n");
 }
 
 /**
@@ -83,62 +125,59 @@ void copyregfile(const char *argv1, const char *argv2)
  * @param {const char} *dire2
  * @return {*}
  */
-void copydirfile(const char *dire1, const char *dire2)
+void copydirfile(thread_pool *copy_pool, filepath *copy_dir)
 {
-    // printf("copydirfile函数启动\n");
-    DIR *dir1, *dir2;
+    printf("copydirfile函数启动\n");
+    DIR *source, *destination;
     // printf("dire1:%s\n", dire1);
     // printf("dire2:%s\n", dire2);
-    if ((dir1 = opendir(dire1)) == NULL)
+    if ((source = opendir(copy_dir->source)) == NULL)
     {
         perror("打开argv[1]失败");
         return;
     }
 
-    if ((dir2 = opendir(dire2)) == NULL)
-        mkdir(dire2, 0755);
+    struct stat stat_buf;
+    stat(copy_dir->source, &stat_buf);
+    if ((destination = opendir(copy_dir->destination)) == NULL && errno == ENOENT)
+        mkdir(copy_dir->destination, stat_buf.st_mode);
 
-    struct dirent *ep1;
+    struct dirent *ep;
 
-    char *abpath = calloc(1, PATH_MAX);
+    char *abpath = calloc(1, 4096);
 
-    while ((ep1 = readdir(dir1)) != NULL)
+    while ((ep = readdir(source)) != NULL)
     {
-        if ((strcmp(ep1->d_name, ".") && strcmp(ep1->d_name, "..")))
+        if ((strcmp(ep->d_name, ".") ==0 || strcmp(ep->d_name, "..") == 0))
         {
             continue;
         }
         struct stat info;
         bzero(&info, sizeof(struct stat));
-        stat(linkpath(abpath, dire1, ep1->d_name), &info); //待修改
+        stat(linkpath(abpath, copy_dir->source, ep->d_name), &info); //待修改
 
         if (S_ISDIR(info.st_mode))
-        {
-            char *buf1 = calloc(1, PATH_MAX);//待优化
-            char *buf2 = calloc(1, PATH_MAX);
-            strcpy(buf1, linkpath(abpath, dire1, ep1->d_name));
-            strcpy(buf2, linkpath(abpath, dire2, ep1->d_name));
-            copydirfile(buf1, buf2);
-            free(buf1);
-            free(buf2);
+        {   
+            filepath *new_copy_dir = init_cp_structure();
+            linkpath(new_copy_dir->source, copy_dir->source, ep->d_name);
+            linkpath(new_copy_dir->destination, copy_dir->destination, ep->d_name);
+            copydirfile(copy_pool, new_copy_dir);
         }
         else
         {
-            char *buf1 = calloc(1, PATH_MAX);//待优化
-            char *buf2 = calloc(1, PATH_MAX);
-            strcpy(buf1, linkpath(abpath, dire1, ep1->d_name));
-            strcpy(buf2, linkpath(abpath, dire2, ep1->d_name));
-            copyregfile(buf1, buf2); 
-            free(buf1);
-            free(buf2);
+            filepath *copy_files = init_cp_structure();
+            linkpath(copy_files->source, copy_dir->source, ep->d_name);
+            linkpath(copy_files->destination, copy_dir->destination, ep->d_name);
+            add_task(copy_pool, copyregfile, copy_files);
         }
     }
-
+    free(copy_dir);
     free(abpath);
 }
 
 int main(int argc, char const *argv[])
 {
+    umask(0);
     if (argc != 3)
     {
         printf("请输入正确的参数\n");
@@ -148,14 +187,28 @@ int main(int argc, char const *argv[])
     bzero(&info, sizeof(struct stat));
     stat(argv[1], &info);
 
+    thread_pool *copy_pool;
+
+
+    if(!init_pool(copy_pool, 5))
+            return -1;
+    
+
+    filepath *copy_files = init_cp_structure();
+    strcpy(copy_files->source, argv[1]);
+    strcpy(copy_files->destination, argv[2]);
+
+
     if (S_ISDIR(info.st_mode))
     {
-        copydirfile(argv[1], argv[2]);
+        copydirfile(copy_pool, copy_files);
     }
     else
     {
-        copyregfile(argv[1], argv[2]);
+        add_task(copy_pool, copyregfile, copy_files);
     }
+
+    destroy_pool(copy_pool);
     return 0;
 }
 
