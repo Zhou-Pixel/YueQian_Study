@@ -1,7 +1,7 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-22 18:52:45
- * @LastEditTime: 2021-09-23 22:04:15
+ * @LastEditTime: 2021-09-23 22:37:56
  * @LastEditors: ZhouGuiqing
  * @Description: 利用线程池拷贝文件夹
  * @FilePath: /YueQian_Study/code/Daily/9.22/project_copy/main.c
@@ -62,7 +62,7 @@ filepath *init_cp_structure(void)
     return new;
 }
 
-void free_cp_structure(filepath *cp)
+void free_filepath(filepath *cp)
 {
     free(cp->destination);
     free(cp->source);
@@ -133,7 +133,7 @@ void *copyregfile(void *arg)
         }
     }
     // free_cp_structure((filepath *)arg);
-    free_cp_structure(copy_files);
+    free_filepath(copy_files);
     close(fd1);
     close(fd2);
     // printf("复制完成\n");
@@ -213,13 +213,12 @@ void copydirfile(thread_pool *copy_pool, filepath *copy_dir)
     }
     closedir(source);
     closedir(destination);
-    free_cp_structure(copy_dir);
+    free_filepath(copy_dir);
     free(abpath);
 }
 
 int main(int argc, char const *argv[])
 {
-    umask(0);
     if (argc != 3)
     {
         printf("请输入正确的参数\n");
@@ -231,9 +230,13 @@ int main(int argc, char const *argv[])
         return -1;
     }
 
+    umask(0);
+
     struct stat info;
     bzero(&info, sizeof(struct stat));
     stat(argv[1], &info);
+
+    
     thread_pool *copy_pool = calloc(1, sizeof(thread_pool));
 
     if (!init_pool(copy_pool, 20))
