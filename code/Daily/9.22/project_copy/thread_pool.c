@@ -121,7 +121,7 @@ bool add_task(thread_pool *pool,
 
 
 	pthread_mutex_unlock(&pool->lock);					//解锁
-	pthread_cond_signal(&pool->cond);					//唤醒正在睡眠中的线程
+	pthread_cond_broadcast(&pool->cond);					//唤醒正在睡眠中的线程
 
 	return true;										//返回添加成功
 }

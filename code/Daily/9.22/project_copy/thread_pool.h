@@ -1,3 +1,11 @@
+/*
+ * @Author: ZhouGuiqing
+ * @Date: 2021-09-23 16:28:53
+ * @LastEditTime: 2021-09-23 22:15:02
+ * @LastEditors: ZhouGuiqing
+ * @Description: 
+ * @FilePath: /YueQian_Study/code/Daily/9.22/project_copy/thread_pool.h
+ */
 #ifndef _THREAD_POOL_H_
 #define _THREAD_POOL_H_
 
@@ -11,7 +19,7 @@
 #include <errno.h>
 #include <pthread.h>
 
-#define MAX_WAITING_TASKS	1000	//最大的等待任务数量
+#define MAX_WAITING_TASKS	9999999999999999	//最大的等待任务数量
 #define MAX_ACTIVE_THREADS	20		//最大的线程数量
 
 // 任务结构体,处理任务
