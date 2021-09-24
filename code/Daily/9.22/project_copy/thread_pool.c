@@ -121,7 +121,7 @@ bool add_task(thread_pool *pool,
 
 
 	pthread_mutex_unlock(&pool->lock);					//解锁
-	pthread_cond_broadcast(&pool->cond);					//唤醒正在睡眠中的线程
+	pthread_cond_signal(&pool->cond);					//唤醒正在睡眠中的线程
 
 	return true;										//返回添加成功
 }
@@ -203,6 +203,8 @@ bool destroy_pool(thread_pool *pool)
 
 	free(pool->task_list);		//释放掉任务头节点
 	free(pool->tids);			//释放掉线程ID内存
+	pthread_cond_destroy(&pool->cond);
+	pthread_mutex_destroy(&pool->lock);
 
 	return true;
 }

@@ -1,7 +1,7 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-22 18:52:45
- * @LastEditTime: 2021-09-23 22:37:56
+ * @LastEditTime: 2021-09-24 10:15:20
  * @LastEditors: ZhouGuiqing
  * @Description: 利用线程池拷贝文件夹
  * @FilePath: /YueQian_Study/code/Daily/9.22/project_copy/main.c
@@ -239,7 +239,7 @@ int main(int argc, char const *argv[])
     
     thread_pool *copy_pool = calloc(1, sizeof(thread_pool));
 
-    if (!init_pool(copy_pool, 20))
+    if (!init_pool(copy_pool, 80))
         return -1;
 
     filepath *copy_files = init_cp_structure();
