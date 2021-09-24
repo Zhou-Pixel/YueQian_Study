@@ -1,7 +1,7 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-22 18:52:45
- * @LastEditTime: 2021-09-24 10:15:20
+ * @LastEditTime: 2021-09-24 16:54:40
  * @LastEditors: ZhouGuiqing
  * @Description: 利用线程池拷贝文件夹
  * @FilePath: /YueQian_Study/code/Daily/9.22/project_copy/main.c
@@ -25,24 +25,52 @@ typedef struct cp_structure
     char *destination;
 } filepath;
 
-// void handle_contents(filepath *copy_path)
-// {
-//     struct stat stat_buf;
-//     stat(copy_path->source, &stat_buf);
-//     if (access(copy_path->destination, F_OK) == -1)
-//     {
-//         return;
-//     }
-//     char *tmp = strrchr(copy_path->destination, '/');
-//     if (tmp == NULL)
-//     {
-//         return;
-//     }
-//     if ()
-//     {
-//         /* code */
-//     }
-// }
+char *linkpath(char *, const char *, char *);
+filepath *init_cp_structure(void);
+void free_filepath(filepath *);
+
+filepath *handle_contents(filepath *copy_path)
+{
+    // struct stat stat_buf;
+    // stat(copy_path->source, &stat_buf);
+    if (access(copy_path->destination, F_OK) == -1)
+    {
+        return copy_path;
+    }
+
+    filepath *new = init_cp_structure();
+    strcpy(new->source, copy_path->source);
+    
+    char *tmp = strrchr(copy_path->source, '/');
+    if (tmp == NULL)
+    {
+        linkpath(new->destination, copy_path->destination, copy_path->source);
+        free_filepath(copy_path);
+        return new;
+    }
+    else if(tmp[1] == '\0')
+    {
+        tmp[0] = '\0';
+        char *an_tmp = strrchr(copy_path->source, '/');
+        if (an_tmp == NULL)
+        {
+            linkpath(new->destination, copy_path->destination, copy_path->source);
+            free_filepath(copy_path);
+            return NULL;
+        }
+        
+        linkpath(new->destination, copy_path->destination, ++an_tmp);
+    }
+    else
+    {
+        linkpath(new->destination, copy_path->destination, ++tmp);
+    }
+    printf("结果源文件：%s\n", new->source);
+    printf("结果目标文件：%s\n", new->destination);
+    free_filepath(copy_path);
+    return new;
+
+}
 
 /**
  * @description: 初始化目标文件和源文件结构体
@@ -99,10 +127,12 @@ char *linkpath(char *abpath, const char *partpath, char *name)
 void *copyregfile(void *arg)
 {
 
-    // printf("copyregfile函数启动\n");
-    // printf("argv1:%s\n", argv1);
-    // printf("argv2:%s\n", argv2);
     filepath *copy_files = arg;
+    // FILE *fp = fopen("a.txt", "a+");
+    // fprintf(fp, "copyregfile函数启动\n");
+    // fprintf(fp, "源文件:%s\n" ,copy_files->source);
+    // fprintf(fp, "目标文件:%s\n", copy_files->destination);
+    // fclose(fp);
     int fd1 = open(copy_files->source, O_RDONLY);
     if (fd1 == -1)
     {
@@ -114,12 +144,24 @@ void *copyregfile(void *arg)
     stat(copy_files->source, &stat_buf);
 
     int fd2 = open(copy_files->destination, O_WRONLY | O_CREAT | O_TRUNC, stat_buf.st_mode);
-    char buf[100];
+    // char buf[100];
+        
+    unsigned int cache_size = stat_buf.st_size / 10;
+    if (cache_size > 8 *1024)
+    {
+        cache_size = 8 * 1024;
+    }
+    if (cache_size < 1024)
+    {
+        cache_size = 1024;
+    }
+    char *buf = calloc(1, cache_size);    
+
     int nread, nwrite;
 
     while (1)
     {
-        while ((nread = read(fd1, buf, 100)) == -1 && errno == EINTR);
+        while ((nread = read(fd1, buf, cache_size)) == -1 && errno == EINTR);
         if (nread == 0)
         {
             break;
@@ -133,6 +175,7 @@ void *copyregfile(void *arg)
         }
     }
     // free_cp_structure((filepath *)arg);
+    free(buf);
     free_filepath(copy_files);
     close(fd1);
     close(fd2);
@@ -149,7 +192,7 @@ void *copyregfile(void *arg)
 void copydirfile(thread_pool *copy_pool, filepath *copy_dir)
 {
     printf("copydirfile函数启动\n");
-    printf("目标目录:%s\n", copy_dir->source);
+    printf("源目录:%s\n", copy_dir->source);
     printf("目标目录:%s\n", copy_dir->destination);
 
     DIR *source, *destination;
@@ -239,7 +282,7 @@ int main(int argc, char const *argv[])
     
     thread_pool *copy_pool = calloc(1, sizeof(thread_pool));
 
-    if (!init_pool(copy_pool, 80))
+    if (!init_pool(copy_pool, 20))
         return -1;
 
     filepath *copy_files = init_cp_structure();
@@ -249,6 +292,7 @@ int main(int argc, char const *argv[])
 
     if (S_ISDIR(info.st_mode))
     {
+        copy_files = handle_contents(copy_files);
         copydirfile(copy_pool, copy_files);
     }
     else
@@ -256,7 +300,8 @@ int main(int argc, char const *argv[])
         add_task(copy_pool, copyregfile, copy_files);
     }
 
-    free(copy_pool);
     destroy_pool(copy_pool);
+    free(copy_pool);
+    
     return 0;
 }

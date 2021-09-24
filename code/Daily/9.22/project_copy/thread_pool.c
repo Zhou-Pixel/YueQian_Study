@@ -197,7 +197,7 @@ bool destroy_pool(thread_pool *pool)
 					i, strerror(errno));
 		}
 		else
-			printf("[%u] is joined\n", (unsigned)pool->tids[i]);
+			printf("NO.%d [%u] is joined\n", i, (unsigned)pool->tids[i]);
 		
 	}
 

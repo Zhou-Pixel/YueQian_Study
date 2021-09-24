@@ -1,7 +1,7 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-23 16:28:53
- * @LastEditTime: 2021-09-24 10:14:59
+ * @LastEditTime: 2021-09-24 15:23:35
  * @LastEditors: ZhouGuiqing
  * @Description: 
  * @FilePath: /YueQian_Study/code/Daily/9.22/project_copy/thread_pool.h
@@ -20,7 +20,7 @@
 #include <pthread.h>
 
 #define MAX_WAITING_TASKS	800000	//最大的等待任务数量
-#define MAX_ACTIVE_THREADS	80		//最大的线程数量
+#define MAX_ACTIVE_THREADS	20		//最大的线程数量
 
 // 任务结构体,处理任务
 struct task					//任务链表结构体
