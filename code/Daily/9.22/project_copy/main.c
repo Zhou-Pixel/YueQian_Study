@@ -1,7 +1,7 @@
 /*
  * @Author: ZhouGuiqing
  * @Date: 2021-09-22 18:52:45
- * @LastEditTime: 2021-09-24 17:10:48
+ * @LastEditTime: 2021-09-26 00:24:55
  * @LastEditors: ZhouGuiqing
  * @Description: 利用线程池拷贝文件夹
  * @FilePath: /YueQian_Study/code/Daily/9.22/project_copy/main.c
@@ -35,6 +35,13 @@ filepath *handle_contents(filepath *copy_path)
     {
         return copy_path;
     }
+    struct stat info;
+    stat(copy_path->destination, &info);
+    if (S_ISREG(info.st_mode))
+    {
+        return copy_path;
+    }
+    
 
     filepath *new = init_filepath();
     strcpy(new->source, copy_path->source);
@@ -43,8 +50,6 @@ filepath *handle_contents(filepath *copy_path)
     if (tmp == NULL)
     {
         linkpath(new->destination, copy_path->destination, copy_path->source);
-        free_filepath(copy_path);
-        return new;
     }
     else if(tmp[1] == '\0')
     {
@@ -53,11 +58,12 @@ filepath *handle_contents(filepath *copy_path)
         if (an_tmp == NULL)
         {
             linkpath(new->destination, copy_path->destination, copy_path->source);
-            free_filepath(copy_path);
-            return NULL;
+        }
+        else
+        {
+            linkpath(new->destination, copy_path->destination, ++an_tmp);
         }
         
-        linkpath(new->destination, copy_path->destination, ++an_tmp);
     }
     else
     {
@@ -104,9 +110,7 @@ void free_filepath(filepath *cp)
  */
 char *linkpath(char *abpath, const char *partpath, char *name)
 {
-    // bzero(abpath, 4096); //待优化
-    // printf("link:%s\n", partpath+strlen(partpath)-1);
-    if (strcmp(partpath + strlen(partpath)-1, "/") == 0)
+    if (strcmp(partpath+strlen(partpath)-1, "/") == 0)
     {
         sprintf(abpath, "%s%s", partpath, name);
     }
@@ -137,10 +141,16 @@ void *copyregfile(void *arg)
     stat(copy_files->source, &stat_buf);
 
     int fd2 = open(copy_files->destination, O_WRONLY | O_CREAT | O_TRUNC, stat_buf.st_mode);
+    if (fd2 == -1)
+    {
+        perror("打开文件失败\n");
+        return NULL;
+    }
+    
     // char buf[100];
         
     unsigned int cache_size = stat_buf.st_size / 10;
-    if (cache_size > 8 *1024)
+    if (cache_size > 8 * 1024)
     {
         cache_size = 8 * 1024;
     }
@@ -281,19 +291,21 @@ int main(int argc, char const *argv[])
     strcpy(copy_files->source, argv[1]);
     strcpy(copy_files->destination, argv[2]);
 
+    copy_files = handle_contents(copy_files);
 
     if (S_ISDIR(info.st_mode))
     {
-        copy_files = handle_contents(copy_files);
         copydirfile(copy_pool, copy_files);
     }
     else
     {
         add_task(copy_pool, copyregfile, copy_files);
+        // copyregfile(copy_files);
     }
 
     destroy_pool(copy_pool);
     free(copy_pool);
+    // free_filepath(copy_files);
     
     return 0;
 }
